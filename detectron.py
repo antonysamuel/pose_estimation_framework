@@ -48,9 +48,13 @@ async def run_detectron(img):
     metad = MetadataCatalog.get(cfg.DATASETS.TRAIN[0])
     k_dct = {}
     for i,j in zip(metad.keypoint_names,keypoints):
-        x = int(j[0].item() * 1)
-        y = int(j[1].item() * 1)
-        k_dct[i] = (x,y)
+
+        if j[2].item() > 0:
+            x = int(j[0].item() * 1)
+            y = int(j[1].item() * 1)
+            k_dct[i] = (x,y)
+        else:
+            k_dct[i] = None
         # cv2.circle(im2,(x,y),4,(0,255,255),-1)
     print(k_dct)
     return k_dct

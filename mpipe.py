@@ -39,8 +39,11 @@ async def run_mediapipe(image):
 
     for i in range(len(kp_names)):
         kp_name = kp_names[i]
-        kp_coor = (int(keyp[i].x * im_np.shape[1]), int(keyp[i].y * im_np.shape[0]))
-        keypoint_dict[kp_name] = kp_coor
-
+        print(keyp[i])
+        if keyp[i].visibility > .3:
+            kp_coor = (int(keyp[i].x * im_np.shape[1]), int(keyp[i].y * im_np.shape[0]))
+            keypoint_dict[kp_name] = kp_coor
+        else:
+            keypoint_dict[kp_name] = None
     print(keypoint_dict)
     return keypoint_dict
