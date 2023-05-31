@@ -4,7 +4,8 @@ import numpy as np
 from PIL import Image
 from io import BytesIO
 import asyncio
-
+from mpipe import run_mediapipe
+from mvnet import run_movenet
 
 app = FastAPI()
 
@@ -14,9 +15,21 @@ def home():
     return {"Hello": "Welcome to pose estimation api.....!"}
 
 
-@app.post("/send_img")
+@app.post("/mediapipe")
 async def get_img(file: UploadFile):
-    await asyncio.sleep(10)
+    # await asyncio.sleep(10)
     img = Image.open(BytesIO(await file.read()))
-    print(img.size)
-    return {"message": f"Image {file.filename} {img.size} uploaded succesfully..."}
+    keypoints = await run_mediapipe(img)
+    if keypoints == None:
+        return {'message': {"status": f"Image {file.filename} {img.size} uploaded succesfully...", "mediapipe": "!NO KEYPOINTS FOUND..."}}
+    return {"message": {"status": f"Image {file.filename} {img.size} uploaded succesfully...", "mediapipe": keypoints}}
+
+
+@app.post("/movenet")
+async def get_img(file: UploadFile):
+    # await asyncio.sleep(10)
+    img = Image.open(BytesIO(await file.read()))
+    keypoints = await run_movenet(img)
+    if keypoints == None:
+        return {'message': {"status": f"Image {file.filename} {img.size} uploaded succesfully...", "movenet": "!NO KEYPOINTS FOUND..."}}
+    return {"message": {"status": f"Image {file.filename} {img.size} uploaded succesfully...", "movenet": keypoints}}
