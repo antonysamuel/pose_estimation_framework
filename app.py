@@ -6,6 +6,8 @@ from io import BytesIO
 import asyncio
 from mpipe import run_mediapipe
 from mvnet import run_movenet
+from detectron import run_detectron
+
 
 app = FastAPI()
 
@@ -33,3 +35,12 @@ async def get_img(file: UploadFile):
     if keypoints == None:
         return {'message': {"status": f"Image {file.filename} {img.size} uploaded succesfully...", "movenet": "!NO KEYPOINTS FOUND..."}}
     return {"message": {"status": f"Image {file.filename} {img.size} uploaded succesfully...", "movenet": keypoints}}
+
+@app.post("/detectron")
+async def get_img(file: UploadFile):
+    # await asyncio.sleep(10)
+    img = Image.open(BytesIO(await file.read()))
+    keypoints = await run_detectron(img)
+    if keypoints == None:
+        return {'message': {"status": f"Image {file.filename} {img.size} uploaded succesfully...", "detectron": "!NO KEYPOINTS FOUND..."}}
+    return {"message": {"status": f"Image {file.filename} {img.size} uploaded succesfully...", "detectron": keypoints}}
